@@ -125,7 +125,7 @@ $(document).ready(function () {
 </div>
 
 
-<p>This code will walk through building a simple recommend system by collaborative filtering using Keras. Please installe dplyr, ggplot2, keras, Rtsne, text2vec. If this is your first time using keras in R, make sure Python is installed. Also run “install_keras()” before you begin.</p>
+<p>This code will walk through building a simple recommendation system by collaborative filtering using Keras. Please install dplyr, ggplot2, keras, Rtsne, text2vec. If this is your first time using keras in R, make sure Python is installed. Also run “install_keras()” before you begin.</p>
 <pre class="r"><code># will need to install these packages along with Rtsne, text2vec
 load(&quot;rUsers.rds&quot;)
 library(dplyr)</code></pre>
@@ -139,6 +139,7 @@ library(dplyr)</code></pre>
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>library(keras)
 library(ggplot2)
+library(Rtsne)
 
 # view the dataset
 samp %&gt;% glimpse()</code></pre>
@@ -233,8 +234,6 @@ print(samp_embed_matrix[1:5,1:5])</code></pre>
 ## 3 -0.6935019 0.9261579 -1.685750 -0.49564049 -0.1371462
 ## 4 -1.0575533 1.0571332 -1.610573  0.20978537  0.1563740
 ## 5 -1.5329788 0.6751974 -2.028563 -0.08093125  0.5547026</code></pre>
-<pre class="r"><code>print(dim(samp_embed_matrix)[1])</code></pre>
-<pre><code>## [1] 226800</code></pre>
 <pre class="r"><code># function to return most similar n products
 get_sim_prod_samp = function(prod_id, n = 5, mat = samp_embed_matrix){
   # use cosine similarity 
@@ -245,7 +244,6 @@ get_sim_prod_samp = function(prod_id, n = 5, mat = samp_embed_matrix){
   mutate(&quot;og_prod&quot; = rep(prod_id, nrow(mat)))
   colnames(recs)[2] &lt;- c(&quot;similarity&quot;)
   recs &lt;- recs %&gt;% arrange(desc(similarity)) %&gt;% 
-    distinct() %&gt;% 
     slice(2:(n+1)) %&gt;% 
     select(og_prod, rec_prod, similarity)
   return(recs)
